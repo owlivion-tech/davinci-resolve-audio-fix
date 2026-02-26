@@ -1,0 +1,154 @@
+<svg width="1280" height="320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#58a6ff"/>
+      <stop offset="50%" stop-color="#bc8cff"/>
+      <stop offset="100%" stop-color="#56d364"/>
+    </linearGradient>
+    <linearGradient id="aacGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff7b72"/>
+      <stop offset="100%" stop-color="#f85149"/>
+    </linearGradient>
+    <linearGradient id="pcmGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#56d364"/>
+      <stop offset="100%" stop-color="#3fb950"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="320" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <line x1="0" y1="160" x2="1280" y2="160" stroke="#21262d" stroke-width="1" opacity="0.5"/>
+  <line x1="640" y1="0" x2="640" y2="320" stroke="#21262d" stroke-width="1" opacity="0.3"/>
+
+  <!-- Top accent border -->
+  <rect width="1280" height="3" fill="url(#titleGrad)"/>
+
+  <!-- Title -->
+  <text x="640" y="95"
+        text-anchor="middle"
+        font-family="'Courier New', Courier, monospace"
+        font-size="68" font-weight="bold"
+        fill="url(#titleGrad)"
+        filter="url(#glow)">resolve-audio-fix</text>
+
+  <!-- Subtitle -->
+  <text x="640" y="135"
+        text-anchor="middle"
+        font-family="'Courier New', Courier, monospace"
+        font-size="19" fill="#8b949e">
+    Automatically fix AAC audio for DaVinci Resolve on Linux
+  </text>
+
+  <!-- Divider -->
+  <line x1="80" y1="158" x2="1200" y2="158" stroke="#21262d" stroke-width="1"/>
+
+  <!-- === AAC SECTION (left) === -->
+  <text x="225" y="183"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="13" fill="#f85149" font-weight="bold">
+    ✗  AAC  (broken in DaVinci Resolve)
+  </text>
+
+  <!-- AAC waveform — complex, irregular, looks like compressed audio -->
+  <polyline
+    points="
+      40,243  48,218  52,265  57,238  62,262  67,215  72,248  77,270  82,232
+      88,255  92,218  98,245  102,268  107,235  112,255  116,218  122,246
+      126,270  131,235  136,255  140,218  146,246  150,270  154,236  160,255
+      164,218  170,248  174,268  178,236  184,255  188,220  194,248  198,268
+      202,236  208,255  212,220  218,248  222,268  226,236  232,252  236,218
+      242,246  246,268  250,236  256,255  260,220  266,248  270,270  274,235
+      280,255  284,220  290,248  294,268  298,236  304,255  308,220  314,248
+      318,268  322,236  328,254  332,220  338,248  342,268  346,236  352,255
+      356,220  362,248  366,268  370,236  376,255  380,220  386,248  390,268
+      394,236  400,255  404,220  410,248  414,268  418,243"
+    fill="none"
+    stroke="url(#aacGrad)"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+    filter="url(#softglow)"
+    opacity="0.9"/>
+
+  <!-- === ARROW SECTION (center) === -->
+  <text x="530" y="228"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="12" fill="#6e7681">ffmpeg</text>
+
+  <!-- Arrow line -->
+  <line x1="448" y1="243" x2="596" y2="243" stroke="#58a6ff" stroke-width="2.5" opacity="0.8"/>
+  <!-- Arrowhead -->
+  <polygon points="597,237 612,243 597,249" fill="#58a6ff" opacity="0.8"/>
+
+  <text x="530" y="263"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="11" fill="#6e7681">-c:a pcm_s16le</text>
+
+  <!-- === PCM SECTION (right) === -->
+  <text x="935" y="183"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="13" fill="#56d364" font-weight="bold">
+    ✓  PCM  (works perfectly)
+  </text>
+
+  <!-- PCM waveform — clean sine wave using cubic bezier approximation -->
+  <!-- Period=60px, Amplitude=28px, Center y=243, Start x=632, 10 periods -->
+  <path
+    d="M 632,243
+       C 647,215 647,215 662,243
+       C 677,271 677,271 692,243
+       C 707,215 707,215 722,243
+       C 737,271 737,271 752,243
+       C 767,215 767,215 782,243
+       C 797,271 797,271 812,243
+       C 827,215 827,215 842,243
+       C 857,271 857,271 872,243
+       C 887,215 887,215 902,243
+       C 917,271 917,271 932,243
+       C 947,215 947,215 962,243
+       C 977,271 977,271 992,243
+       C 1007,215 1007,215 1022,243
+       C 1037,271 1037,271 1052,243
+       C 1067,215 1067,215 1082,243
+       C 1097,271 1097,271 1112,243
+       C 1127,215 1127,215 1142,243
+       C 1157,271 1157,271 1172,243
+       C 1187,215 1187,215 1202,243
+       C 1217,271 1217,271 1232,243"
+    fill="none"
+    stroke="url(#pcmGrad)"
+    stroke-width="2"
+    filter="url(#softglow)"/>
+
+  <!-- Bottom bar -->
+  <rect y="305" width="1280" height="15" fill="#0d1117" opacity="0.8"/>
+  <text x="640" y="316"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="11" fill="#484f58">
+    github.com/owlivion/resolve-audio-fix
+  </text>
+</svg>

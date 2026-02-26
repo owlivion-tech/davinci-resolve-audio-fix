@@ -1,33 +1,68 @@
+<div align="center">
+
+![resolve-audio-fix banner](assets/banner.svg)
+
 # resolve-audio-fix
 
-**DaVinci Resolve on Linux does not support AAC audio.** This tool automatically detects and converts AAC audio in your video files to PCM — a format fully supported by DaVinci Resolve — without re-encoding the video stream.
+**DaVinci Resolve on Linux silently drops AAC audio.**
+This tool fixes it — automatically.
 
-## Why does this happen?
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](#requirements)
+[![Shell](https://img.shields.io/badge/shell-bash-89e051.svg)](#)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![GitHub Stars](https://img.shields.io/github/stars/owlivion/resolve-audio-fix?style=social)](https://github.com/owlivion/resolve-audio-fix)
 
-AAC is a patented codec. On Windows and macOS, the operating system provides AAC decoding at the system level (Windows Media Foundation / Apple CoreAudio). On Linux, no such system-level decoder exists for DaVinci Resolve to hook into — and Blackmagic Design has not bundled an alternative.
+</div>
+
+---
+
+## The Problem
+
+DaVinci Resolve on **Linux does not support AAC audio** — the codec used by most cameras, phones, and downloaded videos. The file imports silently, the timeline looks fine, but **there is no sound**.
+
+On Windows and macOS, the operating system provides AAC decoding at the system level. On Linux, no such layer exists, and Blackmagic Design has not bundled an alternative. This has been a known limitation since DaVinci Resolve 16 with no official fix in sight.
+
+## The Solution
+
+`resolve-audio-fix` watches your directories for new video files. When a file with AAC audio is detected, it automatically re-encodes the audio stream to **PCM** (uncompressed, fully supported by DaVinci Resolve) while **copying the video stream without re-encoding** — zero quality loss, fast conversion.
+
+```
+your_video.mp4          →    your_video_dr.mov
+[H.264 + AAC]                [H.264 + PCM]
+ ✗ silent in DR               ✓ works perfectly
+```
+
+---
 
 ## Features
 
-- **Auto watch** — monitors your chosen directories (Downloads, Videos, custom) for new video files
-- **Smart detection** — only processes files with AAC audio, skips everything else
-- **Lossless video** — video stream is copied as-is, no quality loss
-- **Desktop notifications** — get notified when conversion starts and completes
-- **Nautilus integration** — right-click any video file → *DR Audio Fix*
-- **Systemd service** — starts automatically on login, restarts on failure
-- **Configurable** — choose directories, output format (MOV/MKV), keep or delete originals
+- **Automatic** — watches your chosen directories in the background via systemd
+- **Smart detection** — checks the actual audio codec, skips files that don't need conversion
+- **Lossless video** — video stream is copied directly, no re-encoding, no quality loss
+- **Non-destructive** — original file is kept by default
+- **Nautilus integration** — right-click any video → *Scripts* → *DR Audio Fix*
+- **Manual mode** — run `dr-convert.sh` directly on any file or batch of files
+- **Desktop notifications** — get notified when conversion starts and finishes
+- **Configurable** — choose watched directories, output format (MOV/MKV), and more
+- **Lightweight** — pure Bash, no runtime dependencies beyond `ffmpeg` and `inotify-tools`
 
-## Supported input formats
-
-`mp4` `mov` `mkv` `avi` `mts` `m2ts` `3gp` `flv` `wmv` `mxf`
+---
 
 ## Requirements
 
-- Linux (Ubuntu/Debian-based recommended)
-- `ffmpeg` + `ffprobe`
-- `inotify-tools`
-- `libnotify-bin` (for desktop notifications, optional)
+| Tool | Purpose |
+|------|---------|
+| `ffmpeg` + `ffprobe` | Audio detection and conversion |
+| `inotify-tools` | Directory watching |
+| `libnotify-bin` | Desktop notifications *(optional)* |
+| `nautilus` | Right-click integration *(optional)* |
 
-## Installation
+> The installer can automatically install missing dependencies on Debian/Ubuntu-based systems.
+
+---
+
+## Quick Start
 
 ```bash
 git clone https://github.com/owlivion/resolve-audio-fix.git
@@ -35,13 +70,50 @@ cd resolve-audio-fix
 bash install.sh
 ```
 
-The installer will:
-1. Check and optionally install missing dependencies
-2. Ask which directories to watch
-3. Ask for output format preference
-4. Install scripts to `~/.local/bin`
-5. Enable the systemd user service
-6. Add a Nautilus right-click script
+That's it. The watcher starts immediately and runs automatically on every login.
+
+---
+
+## Installation
+
+The interactive installer walks you through everything:
+
+```
+$ bash install.sh
+
+  resolve-audio-fix — DaVinci Resolve AAC Audio Fix for Linux
+  https://github.com/owlivion/resolve-audio-fix
+
+[✓] All dependencies satisfied.
+
+[?] Which directories should be watched for new videos?
+    (space-separated, press Enter for default: $HOME/Downloads)
+  > /home/user/Downloads /home/user/Videos
+
+[?] Output format? [mov/mkv] (default: mov)
+  > mov
+
+[?] Delete original file after conversion? [y/N] (default: no)
+  > n
+
+[✓] Config written to ~/.config/resolve-audio-fix/dr-watch.conf
+[✓] Scripts installed to ~/.local/bin
+[✓] Systemd service enabled and started.
+[✓] Nautilus right-click script installed.
+
+[✓] Installation complete!
+
+  Watch dirs : /home/user/Downloads /home/user/Videos
+  Output     : <original>_dr.mov
+  Config     : ~/.config/resolve-audio-fix/dr-watch.conf
+  Logs       : ~/.local/share/resolve-audio-fix/convert.log
+
+  Manual convert : dr-convert.sh <file>
+  Service status : systemctl --user status dr-audio-watch
+  View logs      : journalctl --user -u dr-audio-watch -f
+```
+
+---
 
 ## Configuration
 
@@ -49,15 +121,17 @@ Edit `~/.config/resolve-audio-fix/dr-watch.conf`:
 
 ```bash
 # Directories to watch (space-separated)
-WATCH_DIRS="$HOME/Downloads $HOME/Videos"
+# Example: WATCH_DIRS="$HOME/Downloads $HOME/Videos $HOME/Camera"
+WATCH_DIRS="$HOME/Downloads"
 
 # Output format: mov (recommended) or mkv
 OUTPUT_FORMAT="mov"
 
-# Suffix for converted files (e.g. video_dr.mov)
+# Suffix appended to converted files
+# Result: video_dr.mov
 OUTPUT_SUFFIX="_dr"
 
-# Delete original after conversion
+# Delete original file after successful conversion
 DELETE_ORIGINAL="false"
 
 # Desktop notifications
@@ -70,32 +144,161 @@ After editing, restart the service:
 systemctl --user restart dr-audio-watch
 ```
 
+---
+
 ## Usage
 
-### Automatic (watch mode)
-Just drop video files into your watched directories. Converted files appear automatically as `filename_dr.mov` alongside the originals.
+### Watch Mode (automatic)
 
-### Manual conversion
+Files placed in your watched directories are converted automatically.
+Drop a camera recording into `~/Downloads` — a `_dr.mov` file appears beside it within seconds.
+
+```
+~/Downloads/
+├── clip.mp4          ← original (AAC audio, silent in DaVinci Resolve)
+└── clip_dr.mov       ← converted (PCM audio, works perfectly)
+```
+
+### Manual Conversion
+
+Convert any file directly:
+
 ```bash
 dr-convert.sh /path/to/video.mp4
-dr-convert.sh /path/to/*.mp4   # batch
 ```
 
-### Nautilus right-click
-Select one or more video files in Nautilus → right-click → *Scripts* → *DR Audio Fix*
+Batch conversion:
 
-### Service management
 ```bash
-systemctl --user status  dr-audio-watch   # status
-systemctl --user restart dr-audio-watch   # restart
-systemctl --user stop    dr-audio-watch   # stop
-journalctl --user -u dr-audio-watch -f    # live logs
+dr-convert.sh ~/Videos/*.mp4
 ```
 
-### View logs
+The tool automatically skips files that:
+- Don't have AAC audio
+- Already have the `_dr` suffix
+- Have already been converted (output file exists)
+
+### Nautilus Right-Click
+
+Select one or more video files in Nautilus, right-click, and choose:
+
+> **Scripts → DR Audio Fix**
+
+Conversion runs in the background. A desktop notification appears when complete.
+
+### Service Management
+
+```bash
+# Check status
+systemctl --user status dr-audio-watch
+
+# View live logs
+journalctl --user -u dr-audio-watch -f
+
+# Restart (e.g. after config change)
+systemctl --user restart dr-audio-watch
+
+# Stop temporarily
+systemctl --user stop dr-audio-watch
+
+# Disable autostart
+systemctl --user disable dr-audio-watch
+```
+
+### View Conversion Log
+
 ```bash
 cat ~/.local/share/resolve-audio-fix/convert.log
 ```
+
+---
+
+## How It Works
+
+```
+                    resolve-audio-fix
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+   inotifywait       dr-convert.sh    Nautilus
+   (watch dirs)      (manual/batch)   (right-click)
+          │               │               │
+          └───────────────┴───────────────┘
+                          │
+                   ffprobe (detect)
+                          │
+                  codec == AAC ?
+                    │         │
+                   NO        YES
+                    │         │
+                  SKIP     ffmpeg
+                            │
+                      -c:v copy          ← video untouched
+                      -c:a pcm_s16le     ← audio re-encoded
+                            │
+                      output_dr.mov
+                            │
+                   notify-send ✓
+```
+
+---
+
+## Supported Input Formats
+
+`mp4` `mov` `mkv` `avi` `mts` `m2ts` `3gp` `flv` `wmv` `mxf`
+
+---
+
+## Troubleshooting
+
+**File was not converted**
+
+Check the log:
+```bash
+cat ~/.local/share/resolve-audio-fix/convert.log
+```
+
+Common reasons:
+- Audio is not AAC (the file already works in DaVinci Resolve)
+- Output file `_dr.mov` already exists
+- File extension is not in the supported list
+- `ffmpeg` encountered an error (check log for details)
+
+**Verify the audio codec of any file:**
+```bash
+ffprobe -v quiet -select_streams a:0 \
+  -show_entries stream=codec_name \
+  -of csv=p=0 your_file.mp4
+```
+
+**Service not starting**
+```bash
+journalctl --user -u dr-audio-watch -xe
+```
+
+**No desktop notifications**
+Install `libnotify-bin`:
+```bash
+sudo apt-get install libnotify-bin
+```
+
+---
+
+## Prevent the Problem at the Source
+
+If you control the recording device or software:
+
+**OBS Studio:**
+> Settings → Output → Recording → Audio Encoder → `PCM (S16LE)`
+
+**ffmpeg recording:**
+```bash
+ffmpeg -i input -c:v copy -c:a pcm_s16le output.mov
+```
+
+**Camera footage:** If your camera allows codec selection, prefer H.264 + PCM or LPCM audio.
+
+---
 
 ## Uninstall
 
@@ -103,31 +306,30 @@ cat ~/.local/share/resolve-audio-fix/convert.log
 bash uninstall.sh
 ```
 
-## FAQ
-
-**Will this re-encode my video?**
-No. The video stream is copied directly (`-c:v copy`). Only the audio is re-encoded from AAC to PCM.
-
-**Why PCM and not Opus/FLAC?**
-DaVinci Resolve on Linux has the broadest support for PCM (uncompressed) audio. It is the safest choice.
-
-**Why MOV and not MP4?**
-MOV handles PCM audio more reliably than MP4. MKV is also available via the config.
-
-**My file was not converted — why?**
-Check the log file. Common reasons: audio is not AAC, output file already exists, or ffmpeg failed.
-
-**Does this work with Kdenlive / OpenShot / other editors?**
-Possibly, but this tool is designed and tested for DaVinci Resolve on Linux.
+---
 
 ## Contributing
 
-Pull requests are welcome. If you encounter a file format that is not handled correctly, please open an issue with the output of:
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
-```bash
-ffprobe -v quiet -print_format json -show_streams your_file.mp4
-```
+Common contribution ideas:
+- **Thunar integration** (XFCE)
+- **Dolphin integration** (KDE)
+- **Nemo integration** (Cinnamon)
+- **AUR / .deb package**
+- Testing on Arch, Fedora, openSUSE
+
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+[MIT](LICENSE) © [Berkan Cetinel (owlivion)](https://github.com/owlivion)
+
+---
+
+<div align="center">
+
+*Built out of frustration by a Linux user who just wanted to edit video.*
+*If this saved you time, consider leaving a ⭐*
+
+</div>
