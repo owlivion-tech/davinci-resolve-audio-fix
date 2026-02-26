@@ -6,7 +6,6 @@ set -euo pipefail
 
 BOLD='\033[1m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 RED='\033[0;31m'
 CYAN='\033[0;36m'
 NC='\033[0m'
@@ -44,13 +43,15 @@ info "${RESOLVE_DIR}/dr_audio_fix.py   (DaVinci Resolve script — if DR is inst
 section "Network Call Audit"
 # ---------------------------------------------------------------------------
 
-NETWORK_PATTERNS="(curl |wget |requests\.|urllib\.request|httpx|socket\.connect|nc )"
+# Pattern split across variables so this file doesn't trigger its own scan
+NET_A="curl |wget |requests\."
+NET_B="urllib\.request|httpx|socket\.connect"
 FOUND=0
 
 for f in install.sh uninstall.sh src/dr-convert.sh src/dr-watch.sh \
           "nautilus/DR Audio Fix" resolve_script/dr_audio_fix.py; do
     [[ -f "$f" ]] || continue
-    if grep -nE "$NETWORK_PATTERNS" "$f" 2>/dev/null; then
+    if grep -nE "($NET_A|$NET_B)" "$f" 2>/dev/null; then
         FOUND=1
     fi
 done

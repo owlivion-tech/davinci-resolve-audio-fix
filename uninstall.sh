@@ -9,7 +9,9 @@ NAUTILUS_SCRIPTS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/nautilus/scripts"
 
 echo "Uninstalling resolve-audio-fix..."
 
-systemctl --user disable --now dr-audio-watch 2>/dev/null && echo "[✓] Service stopped and disabled." || true
+if systemctl --user disable --now dr-audio-watch 2>/dev/null; then
+    echo "[✓] Service stopped and disabled."
+fi
 
 rm -f "$SYSTEMD_DIR/dr-audio-watch.service"
 systemctl --user daemon-reload
