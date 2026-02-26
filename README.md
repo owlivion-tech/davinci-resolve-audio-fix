@@ -68,8 +68,8 @@ your_video.mp4          →    your_video_dr.mov
 ## Quick Start
 
 ```bash
-git clone https://github.com/owlivion/resolve-audio-fix.git
-cd resolve-audio-fix
+git clone https://github.com/owlivion-tech/davinci-resolve-audio-fix.git
+cd davinci-resolve-audio-fix
 bash install.sh
 ```
 
@@ -78,6 +78,52 @@ That's it. The watcher starts immediately and runs automatically on every login.
 ---
 
 ## Installation
+
+### Option A — Git clone (recommended)
+
+```bash
+git clone https://github.com/owlivion-tech/davinci-resolve-audio-fix.git
+cd davinci-resolve-audio-fix
+bash verify.sh    # optional: audit before installing
+bash install.sh
+```
+
+### Option B — Verified release download
+
+Download and verify the signed release before installing:
+
+```bash
+# 1. Import the maintainer's GPG key
+gpg --keyserver keyserver.ubuntu.com --recv-keys 8825D82CA0432A66
+
+# 2. Download release assets
+gh release download v1.0.0 \
+  --repo owlivion-tech/davinci-resolve-audio-fix
+
+# 3. Verify GPG signature
+gpg --verify checksums.sha256.sig checksums.sha256
+
+# 4. Verify file integrity
+sha256sum -c checksums.sha256
+
+# 5. Install
+bash install.sh
+```
+
+Expected output after steps 3 and 4:
+```
+gpg: Good signature from "Berkan Cetinel <owlivion@users.noreply.github.com>"
+
+install.sh:   OK
+uninstall.sh: OK
+verify.sh:    OK
+```
+
+> **GPG Key fingerprint:** `69B8 8481 62DF B3E1 A196 E08F 8825 D82C A043 2A66`
+
+---
+
+### Installer walkthrough
 
 The interactive installer walks you through everything:
 
