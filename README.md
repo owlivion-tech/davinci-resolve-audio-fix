@@ -79,7 +79,20 @@ That's it. The watcher starts immediately and runs automatically on every login.
 
 ## Installation
 
-### Option A — Git clone (recommended)
+### Option A — .deb package (easiest)
+
+```bash
+# Download
+wget https://github.com/owlivion-tech/davinci-resolve-audio-fix/releases/latest/download/davinci-resolve-audio-fix_1.0.0_all.deb
+
+# Install
+sudo dpkg -i davinci-resolve-audio-fix_1.0.0_all.deb
+
+# Install missing dependencies if needed
+sudo apt-get install -f
+```
+
+### Option B — Git clone (recommended)
 
 ```bash
 git clone https://github.com/owlivion-tech/davinci-resolve-audio-fix.git

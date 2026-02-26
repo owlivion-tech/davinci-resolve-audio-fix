@@ -1,0 +1,72 @@
+#!/bin/bash
+# postinst — runs after dpkg installs the package
+set -e
+
+PACKAGE="davinci-resolve-audio-fix"
+SHARE_DIR="/usr/share/${PACKAGE}"
+SERVICE_NAME="dr-audio-watch"
+
+# Determine the real (non-root) user
+REAL_USER="${SUDO_USER:-}"
+if [[ -z "$REAL_USER" || "$REAL_USER" == "root" ]]; then
+    echo ""
+    echo "  [!] Could not determine the target user automatically."
+    echo "  [!] Run the following command as your regular user to finish setup:"
+    echo ""
+    echo "      dr-audio-fix-setup"
+    echo ""
+    exit 0
+fi
+
+REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+CONFIG_DIR="${REAL_HOME}/.config/resolve-audio-fix"
+SYSTEMD_DIR="${REAL_HOME}/.config/systemd/user"
+NAUTILUS_DIR="${REAL_HOME}/.local/share/nautilus/scripts"
+RESOLVE_DIR="${REAL_HOME}/.local/share/DaVinciResolve/Fusion/Scripts/Utility"
+
+setup_user_env() {
+    mkdir -p "$CONFIG_DIR" "$SYSTEMD_DIR" "$NAUTILUS_DIR"
+
+    # Write default config if not already present
+    if [[ ! -f "${CONFIG_DIR}/dr-watch.conf" ]]; then
+        cp "${SHARE_DIR}/config/dr-watch.conf.example" "${CONFIG_DIR}/dr-watch.conf"
+    fi
+
+    # Install systemd service (use /usr/bin path instead of ~/.local/bin)
+    sed 's|%h/.local/bin/dr-watch.sh|/usr/bin/dr-watch|g' \
+        "${SHARE_DIR}/systemd/dr-audio-watch.service" \
+        > "${SYSTEMD_DIR}/dr-audio-watch.service"
+
+    # Install Nautilus right-click script
+    cp "${SHARE_DIR}/nautilus/DR Audio Fix" "${NAUTILUS_DIR}/DR Audio Fix"
+    chmod +x "${NAUTILUS_DIR}/DR Audio Fix"
+
+    # Install DaVinci Resolve script if Resolve is present
+    if [[ -f "/opt/resolve/bin/resolve" ]]; then
+        mkdir -p "$RESOLVE_DIR"
+        cp "${SHARE_DIR}/resolve_script/dr_audio_fix.py" "${RESOLVE_DIR}/"
+    fi
+}
+
+# Run setup as the real user
+su -s /bin/bash "$REAL_USER" <<EOF
+$(declare -f setup_user_env)
+setup_user_env
+EOF
+
+# Enable and start the systemd user service
+USER_ID=$(id -u "$REAL_USER")
+if [[ -d "/run/user/${USER_ID}" ]]; then
+    su -s /bin/bash "$REAL_USER" <<EOF || true
+export XDG_RUNTIME_DIR=/run/user/${USER_ID}
+systemctl --user daemon-reload
+systemctl --user enable --now ${SERVICE_NAME}
+EOF
+fi
+
+echo ""
+echo "  davinci-resolve-audio-fix installed successfully."
+echo "  Config: ${CONFIG_DIR}/dr-watch.conf"
+echo "  Edit config to set your watch directories, then:"
+echo "    systemctl --user restart dr-audio-watch"
+echo ""

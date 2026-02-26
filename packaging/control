@@ -1,0 +1,17 @@
+Package: davinci-resolve-audio-fix
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: ffmpeg, inotify-tools
+Recommends: libnotify-bin, python3-tk
+Maintainer: Berkan Cetinel <owlivion@users.noreply.github.com>
+Homepage: https://github.com/owlivion-tech/davinci-resolve-audio-fix
+Description: Fix AAC audio in DaVinci Resolve on Linux
+ DaVinci Resolve on Linux does not support AAC audio — the codec used
+ by most cameras, phones, and downloaded videos. This tool automatically
+ detects and converts AAC audio to PCM, making files fully compatible
+ with DaVinci Resolve while preserving video quality without re-encoding.
+ .
+ Features: directory watcher (systemd), Nautilus right-click integration,
+ DaVinci Resolve script (Workspace -> Scripts), and manual batch conversion.

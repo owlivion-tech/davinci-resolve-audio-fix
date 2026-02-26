@@ -1,0 +1,31 @@
+#!/bin/bash
+# prerm — runs before dpkg removes the package
+set -e
+
+REAL_USER="${SUDO_USER:-}"
+[[ -z "$REAL_USER" || "$REAL_USER" == "root" ]] && exit 0
+
+REAL_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+USER_ID=$(id -u "$REAL_USER")
+
+# Stop and disable systemd service
+if [[ -d "/run/user/${USER_ID}" ]]; then
+    su -s /bin/bash "$REAL_USER" <<EOF || true
+export XDG_RUNTIME_DIR=/run/user/${USER_ID}
+systemctl --user disable --now dr-audio-watch 2>/dev/null || true
+rm -f "${REAL_HOME}/.config/systemd/user/dr-audio-watch.service"
+systemctl --user daemon-reload || true
+EOF
+fi
+
+# Remove Nautilus script
+rm -f "${REAL_HOME}/.local/share/nautilus/scripts/DR Audio Fix"
+
+# Remove DaVinci Resolve script
+rm -f "${REAL_HOME}/.local/share/DaVinciResolve/Fusion/Scripts/Utility/dr_audio_fix.py"
+
+echo ""
+echo "  davinci-resolve-audio-fix removed."
+echo "  Config kept at: ${REAL_HOME}/.config/resolve-audio-fix/"
+echo "  To fully remove: rm -rf ${REAL_HOME}/.config/resolve-audio-fix/"
+echo ""
