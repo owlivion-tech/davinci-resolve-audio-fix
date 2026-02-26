@@ -25,10 +25,6 @@ jobs:
             install.sh \
             uninstall.sh \
             verify.sh \
-            src/dr-convert.sh \
-            src/dr-watch.sh \
-            "nautilus/DR Audio Fix" \
-            resolve_script/dr_audio_fix.py \
             > checksums.sha256
 
           echo ""

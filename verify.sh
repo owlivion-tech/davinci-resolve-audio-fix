@@ -81,11 +81,16 @@ section "Checksums"
 # ---------------------------------------------------------------------------
 
 sha256sum \
-    install.sh uninstall.sh \
+    install.sh uninstall.sh verify.sh \
     src/dr-convert.sh src/dr-watch.sh \
     "nautilus/DR Audio Fix" \
     resolve_script/dr_audio_fix.py \
     2>/dev/null || true
+
+echo ""
+info "Release asset verification (after downloading from GitHub Releases):"
+info "  sha256sum -c checksums.sha256"
+info "  gpg --verify checksums.sha256.sig checksums.sha256"
 
 # ---------------------------------------------------------------------------
 section "GPG Signature Verification"
