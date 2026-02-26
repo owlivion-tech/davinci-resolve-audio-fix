@@ -16,7 +16,7 @@ fi
 rm -f "$SYSTEMD_DIR/dr-audio-watch.service"
 systemctl --user daemon-reload
 
-rm -f "$BIN_DIR/dr-convert.sh" "$BIN_DIR/dr-watch.sh"
+rm -f "$BIN_DIR/davinci-audio-fix" "$BIN_DIR/davinci-audio-watchd"
 rm -f "$NAUTILUS_SCRIPTS_DIR/DR Audio Fix"
 
 echo -n "[?] Remove config and logs too? [y/N] "

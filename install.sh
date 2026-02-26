@@ -157,8 +157,8 @@ fi
 # ---------------------------------------------------------------------------
 # Install scripts
 # ---------------------------------------------------------------------------
-run install -m 755 "$SCRIPT_DIR/src/dr-convert.sh" "$BIN_DIR/dr-convert.sh"
-run install -m 755 "$SCRIPT_DIR/src/dr-watch.sh"   "$BIN_DIR/dr-watch.sh"
+run install -m 755 "$SCRIPT_DIR/src/dr-convert.sh" "$BIN_DIR/davinci-audio-fix"
+run install -m 755 "$SCRIPT_DIR/src/dr-watch.sh"   "$BIN_DIR/davinci-audio-watchd"
 [[ "$DRY_RUN" != "true" ]] && info "Scripts installed to $BIN_DIR"
 
 # ---------------------------------------------------------------------------
@@ -213,7 +213,7 @@ else
     echo "  Config     : $CONFIG_DIR/dr-watch.conf"
     echo "  Logs       : ~/.local/share/resolve-audio-fix/convert.log"
     echo ""
-    echo "  Manual convert : dr-convert.sh <file>"
+    echo "  Manual convert : davinci-audio-fix <file>"
     echo "  Service status : systemctl --user status dr-audio-watch"
     echo "  View logs      : journalctl --user -u dr-audio-watch -f"
 fi

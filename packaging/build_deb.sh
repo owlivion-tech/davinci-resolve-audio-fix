@@ -25,8 +25,8 @@ mkdir -p "${PKG_DIR}/usr/share/${PACKAGE}/nautilus"
 mkdir -p "${PKG_DIR}/usr/share/${PACKAGE}/resolve_script"
 
 # Executables → /usr/bin/
-install -m 755 "${ROOT_DIR}/src/dr-convert.sh" "${PKG_DIR}/usr/bin/dr-convert"
-install -m 755 "${ROOT_DIR}/src/dr-watch.sh"   "${PKG_DIR}/usr/bin/dr-watch"
+install -m 755 "${ROOT_DIR}/src/dr-convert.sh" "${PKG_DIR}/usr/bin/davinci-audio-fix"
+install -m 755 "${ROOT_DIR}/src/dr-watch.sh"   "${PKG_DIR}/usr/bin/davinci-audio-watchd"
 
 # Shared data
 install -m 644 "${ROOT_DIR}/config/dr-watch.conf" \

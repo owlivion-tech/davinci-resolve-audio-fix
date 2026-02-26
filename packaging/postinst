@@ -33,7 +33,7 @@ setup_user_env() {
     fi
 
     # Install systemd service (use /usr/bin path instead of ~/.local/bin)
-    sed 's|%h/.local/bin/dr-watch.sh|/usr/bin/dr-watch|g' \
+    sed 's|%h/.local/bin/davinci-audio-watchd|/usr/bin/davinci-audio-watchd|g' \
         "${SHARE_DIR}/systemd/dr-audio-watch.service" \
         > "${SYSTEMD_DIR}/dr-audio-watch.service"
 

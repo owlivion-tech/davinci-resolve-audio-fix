@@ -22,7 +22,7 @@ if [[ ! -f "${CONFIG_DIR}/dr-watch.conf" ]]; then
     cp "${SHARE_DIR}/config/dr-watch.conf.example" "${CONFIG_DIR}/dr-watch.conf"
 fi
 
-sed 's|%h/.local/bin/dr-watch.sh|/usr/bin/dr-watch|g' \
+sed 's|%h/.local/bin/davinci-audio-watchd|/usr/bin/davinci-audio-watchd|g' \
     "${SHARE_DIR}/systemd/dr-audio-watch.service" \
     > "${SYSTEMD_DIR}/dr-audio-watch.service"
 
@@ -89,7 +89,7 @@ _print_manual_setup() {
     echo "    mkdir -p ~/.config/resolve-audio-fix ~/.config/systemd/user"
     echo "    cp /usr/share/davinci-resolve-audio-fix/config/dr-watch.conf.example \\"
     echo "       ~/.config/resolve-audio-fix/dr-watch.conf"
-    echo "    sed 's|%h/.local/bin/dr-watch.sh|/usr/bin/dr-watch|g' \\"
+    echo "    sed 's|%h/.local/bin/davinci-audio-watchd|/usr/bin/davinci-audio-watchd|g' \\"
     echo "       /usr/share/davinci-resolve-audio-fix/systemd/dr-audio-watch.service \\"
     echo "       > ~/.config/systemd/user/dr-audio-watch.service"
     echo "    systemctl --user daemon-reload"

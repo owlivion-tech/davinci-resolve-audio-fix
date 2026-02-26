@@ -58,5 +58,5 @@ inotifywait -m -r \
     # Small delay — ensure file is fully written before processing
     sleep 2
 
-    dr-convert.sh "$filepath" 2>>"$LOG_FILE" || true
+    davinci-audio-fix "$filepath" 2>>"$LOG_FILE" || true
 done

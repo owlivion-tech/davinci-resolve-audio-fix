@@ -20,8 +20,8 @@ package() {
     cd "${srcdir}/davinci-resolve-audio-fix-${pkgver}"
 
     # Executables
-    install -Dm755 src/dr-convert.sh "${pkgdir}/usr/bin/dr-convert"
-    install -Dm755 src/dr-watch.sh   "${pkgdir}/usr/bin/dr-watch"
+    install -Dm755 src/dr-convert.sh "${pkgdir}/usr/bin/davinci-audio-fix"
+    install -Dm755 src/dr-watch.sh   "${pkgdir}/usr/bin/davinci-audio-watchd"
 
     # Shared data
     install -Dm644 config/dr-watch.conf \
