@@ -1,0 +1,57 @@
+name: AUR Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  aur:
+    name: Publish to AUR
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------------------------------------------------------------------
+      # Compute sha256 of the source tarball for the new tag
+      # -------------------------------------------------------------------
+      - name: Compute source tarball checksum
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          URL="https://github.com/owlivion-tech/davinci-resolve-audio-fix/archive/refs/tags/v${VERSION}.tar.gz"
+          SHA=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "SHA256=$SHA"      >> "$GITHUB_ENV"
+
+      # -------------------------------------------------------------------
+      # Update PKGBUILD and .SRCINFO with new version and checksum
+      # -------------------------------------------------------------------
+      - name: Update PKGBUILD
+        run: |
+          sed -i "s/^pkgver=.*/pkgver=${VERSION}/"     packaging/aur/PKGBUILD
+          sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" packaging/aur/PKGBUILD
+
+      - name: Update .SRCINFO
+        run: |
+          sed -i "s/pkgver = .*/pkgver = ${VERSION}/"  packaging/aur/.SRCINFO
+          sed -i "s/sha256sums = .*/sha256sums = ${SHA256}/" packaging/aur/.SRCINFO
+          # Update source tarball URL version reference
+          sed -i "s|v[0-9]*\.[0-9]*\.[0-9]*\.tar\.gz|v${VERSION}.tar.gz|g" packaging/aur/.SRCINFO
+          sed -i "s|davinci-resolve-audio-fix-[0-9]*\.[0-9]*\.[0-9]*\.tar\.gz|davinci-resolve-audio-fix-${VERSION}.tar.gz|" packaging/aur/.SRCINFO
+
+      # -------------------------------------------------------------------
+      # Publish to AUR
+      # Requires AUR_SSH_KEY secret (your AUR account's SSH private key)
+      # -------------------------------------------------------------------
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v3.0.1
+        with:
+          pkgname: davinci-resolve-audio-fix
+          pkgbuild: packaging/aur/PKGBUILD
+          srcinfo: packaging/aur/.SRCINFO
+          commit_username: owlivion-tech
+          commit_email: owlivion@users.noreply.github.com
+          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
+          commit_message: "Update to v${{ env.VERSION }}"
+          force_push: true

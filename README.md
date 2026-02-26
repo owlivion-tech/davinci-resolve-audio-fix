@@ -79,7 +79,22 @@ That's it. The watcher starts immediately and runs automatically on every login.
 
 ## Installation
 
-### Option A — .deb package (easiest)
+### Option A — AUR (Arch Linux)
+
+```bash
+# Using yay
+yay -S davinci-resolve-audio-fix
+
+# Using paru
+paru -S davinci-resolve-audio-fix
+
+# Manual
+git clone https://aur.archlinux.org/davinci-resolve-audio-fix.git
+cd davinci-resolve-audio-fix
+makepkg -si
+```
+
+### Option B — .deb package (Debian/Ubuntu)
 
 ```bash
 # Download
