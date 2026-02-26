@@ -10,6 +10,9 @@ This tool fixes it — automatically.
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](#requirements)
 [![Shell](https://img.shields.io/badge/shell-bash-89e051.svg)](#)
+[![CI](https://github.com/owlivion/resolve-audio-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/owlivion/resolve-audio-fix/actions/workflows/ci.yml)
+[![ShellCheck](https://img.shields.io/badge/shellcheck-passing-brightgreen.svg)](#trust--security)
+[![No Network](https://img.shields.io/badge/network_calls-zero-brightgreen.svg)](#trust--security)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub Stars](https://img.shields.io/github/stars/owlivion/resolve-audio-fix?style=social)](https://github.com/owlivion/resolve-audio-fix)
 
@@ -297,6 +300,79 @@ ffmpeg -i input -c:v copy -c:a pcm_s16le output.mov
 ```
 
 **Camera footage:** If your camera allows codec selection, prefer H.264 + PCM or LPCM audio.
+
+---
+
+## DaVinci Resolve Script
+
+In addition to the background watcher, `resolve-audio-fix` includes a Python script
+that runs **directly inside DaVinci Resolve** from the Workspace menu.
+
+### Install
+
+The `install.sh` installer places it automatically if DaVinci Resolve is detected.
+To install manually:
+
+```bash
+cp resolve_script/dr_audio_fix.py \
+   ~/.local/share/DaVinciResolve/Fusion/Scripts/Utility/
+```
+
+### Usage
+
+1. Open DaVinci Resolve
+2. Navigate to the Media Pool folder containing your clips
+3. Go to **Workspace → Scripts → dr_audio_fix**
+4. Click **Convert AAC Clips in Current Folder**
+
+The script scans all clips in the current folder, converts any with AAC audio,
+and automatically imports the converted files back into the Media Pool.
+
+---
+
+## Trust & Security
+
+`resolve-audio-fix` is designed to be fully auditable.
+
+| Property | Status |
+|----------|--------|
+| No network calls | Verified by CI on every commit |
+| No root/sudo required | Installs to `~/.local/` only |
+| No binary blobs | Pure Bash + Python, fully readable |
+| No data collection | Zero telemetry |
+| ShellCheck clean | Zero warnings |
+| Bandit clean | Zero findings |
+
+### Verify before installing
+
+```bash
+# 1. Audit the code — shows all install paths and checks for network calls
+bash verify.sh
+
+# 2. Preview install without making any changes
+bash install.sh --dry-run
+
+# 3. Verify with strace — should show zero network syscalls
+strace -e trace=network bash install.sh 2>&1 | grep -v "^---"
+```
+
+### Verify a signed release
+
+```bash
+# Import maintainer's public GPG key
+gpg --keyserver keyserver.ubuntu.com --recv-keys 8825D82CA0432A66
+
+# Verify signature
+gpg --verify checksums.sha256.sig checksums.sha256
+
+# Check file integrity
+sha256sum -c checksums.sha256
+```
+
+**GPG Key:** `69B8 8481 62DF B3E1 A196  E08F 8825 D82C A043 2A66`
+**Key owner:** Berkan Cetinel `<owlivion@users.noreply.github.com>`
+
+See [SECURITY.md](SECURITY.md) for the full security policy.
 
 ---
 

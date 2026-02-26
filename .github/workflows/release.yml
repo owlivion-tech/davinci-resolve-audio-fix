@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Signed Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------------------------------------------------------------------
+      # Generate SHA256 checksums for all distributable files
+      # -------------------------------------------------------------------
+      - name: Generate checksums
+        run: |
+          sha256sum \
+            install.sh \
+            uninstall.sh \
+            verify.sh \
+            src/dr-convert.sh \
+            src/dr-watch.sh \
+            "nautilus/DR Audio Fix" \
+            resolve_script/dr_audio_fix.py \
+            > checksums.sha256
+
+          echo ""
+          echo "=== checksums.sha256 ==="
+          cat checksums.sha256
+
+      # -------------------------------------------------------------------
+      # GPG-sign the checksums file
+      # GPG_PRIVATE_KEY is stored as a GitHub Actions secret
+      # -------------------------------------------------------------------
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | \
+            gpg --batch --import
+
+      - name: Sign checksums
+        run: |
+          gpg --batch --yes \
+            --detach-sign --armor \
+            --output checksums.sha256.sig \
+            checksums.sha256
+
+          echo ""
+          echo "=== Signature ==="
+          cat checksums.sha256.sig
+
+      # -------------------------------------------------------------------
+      # Create GitHub Release with all files attached
+      # -------------------------------------------------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            checksums.sha256
+            checksums.sha256.sig
+            install.sh
+            uninstall.sh
+            verify.sh

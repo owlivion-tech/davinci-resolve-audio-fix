@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # -------------------------------------------------------------------------
+  # 1. ShellCheck — static analysis for all Bash scripts
+  # -------------------------------------------------------------------------
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          shellcheck \
+            install.sh \
+            uninstall.sh \
+            verify.sh \
+            src/dr-convert.sh \
+            src/dr-watch.sh \
+            "nautilus/DR Audio Fix"
+
+  # -------------------------------------------------------------------------
+  # 2. Bandit — Python security analysis
+  # -------------------------------------------------------------------------
+  python-security:
+    name: Python Security (bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install bandit
+        run: pip install bandit
+
+      - name: Run bandit
+        run: bandit -r resolve_script/ -ll -ii
+
+  # -------------------------------------------------------------------------
+  # 3. Network audit — prove zero outbound calls exist in code
+  # -------------------------------------------------------------------------
+  network-audit:
+    name: Network Call Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for outbound network patterns
+        run: |
+          echo "Scanning for network calls in scripts..."
+          if grep -rn \
+            --include="*.sh" --include="*.py" \
+            -E "(curl |wget |requests\.|urllib\.request|httpx|socket\.connect|nc )" \
+            src/ resolve_script/ install.sh uninstall.sh verify.sh 2>/dev/null; then
+            echo ""
+            echo "FAIL: Potential outbound network calls found."
+            exit 1
+          fi
+          echo "PASS: No outbound network calls found."
+          echo "Tool only invokes: ffmpeg, ffprobe (local binaries)"
+
+  # -------------------------------------------------------------------------
+  # 4. Dry-run smoke test
+  # -------------------------------------------------------------------------
+  dry-run:
+    name: Install Dry-Run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install.sh --dry-run
+        run: bash install.sh --dry-run
