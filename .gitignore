@@ -1,0 +1,15 @@
+# Build artifacts
+*.deb
+davinci-resolve-audio-fix_*/
+
+# Logs
+*.log
+
+# Editor & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
