@@ -1,0 +1,16 @@
+#!/bin/bash
+# Nautilus script — right-click selected video files to convert for DaVinci Resolve
+# Part of resolve-audio-fix: https://github.com/owlivion/resolve-audio-fix
+
+if ! command -v dr-convert.sh &>/dev/null; then
+    notify-send "resolve-audio-fix" "dr-convert.sh not found. Run install.sh first." --icon=dialog-error
+    exit 1
+fi
+
+IFS=$'\n'
+for file in $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS; do
+    [[ -f "$file" ]] && dr-convert.sh "$file" &
+done
+
+wait
+notify-send "resolve-audio-fix" "All conversions complete." --icon=video-x-generic
