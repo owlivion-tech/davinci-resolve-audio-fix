@@ -10,11 +10,12 @@ This tool fixes it — automatically.
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](#requirements)
 [![Shell](https://img.shields.io/badge/shell-bash-89e051.svg)](#)
-[![CI](https://github.com/owlivion/resolve-audio-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/owlivion/resolve-audio-fix/actions/workflows/ci.yml)
+[![CI](https://github.com/owlivion-tech/davinci-resolve-audio-fix/actions/workflows/ci.yml/badge.svg)](https://github.com/owlivion-tech/davinci-resolve-audio-fix/actions/workflows/ci.yml)
 [![ShellCheck](https://img.shields.io/badge/shellcheck-passing-brightgreen.svg)](#trust--security)
 [![No Network](https://img.shields.io/badge/network_calls-zero-brightgreen.svg)](#trust--security)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-blue.svg)](https://github.com/owlivion-tech/davinci-resolve-audio-fix/pkgs/container/davinci-resolve-audio-fix)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![GitHub Stars](https://img.shields.io/github/stars/owlivion/resolve-audio-fix?style=social)](https://github.com/owlivion/resolve-audio-fix)
+[![GitHub Stars](https://img.shields.io/github/stars/owlivion-tech/davinci-resolve-audio-fix?style=social)](https://github.com/owlivion-tech/davinci-resolve-audio-fix)
 
 </div>
 
@@ -48,6 +49,7 @@ your_video.mp4          →    your_video_dr.mov
 - **Manual mode** — run `dr-convert.sh` directly on any file or batch of files
 - **Desktop notifications** — get notified when conversion starts and finishes
 - **Configurable** — choose watched directories, output format (MOV/MKV), and more
+- **Docker support** — run without installing anything via `ghcr.io`
 - **Lightweight** — pure Bash, no runtime dependencies beyond `ffmpeg` and `inotify-tools`
 
 ---
@@ -107,7 +109,24 @@ sudo dpkg -i davinci-resolve-audio-fix_1.0.0_all.deb
 sudo apt-get install -f
 ```
 
-### Option B — Git clone (recommended)
+### Option C — Docker (no installation required)
+
+No dependencies, no system changes — runs in an isolated container.
+
+```bash
+docker run --rm \
+  -v /path/to/your/videos:/videos \
+  ghcr.io/owlivion-tech/davinci-resolve-audio-fix:latest \
+  /videos/your_video.mp4
+```
+
+The converted file (`your_video_dr.mov`) appears in the same directory.
+
+> Docker must be installed. The container requires access to your video directory via `-v`.
+
+---
+
+### Option D — Git clone (recommended)
 
 ```bash
 git clone https://github.com/owlivion-tech/davinci-resolve-audio-fix.git
@@ -116,7 +135,7 @@ bash verify.sh    # optional: audit before installing
 bash install.sh
 ```
 
-### Option B — Verified release download
+### Option E — Verified release download
 
 Download and verify the signed release before installing:
 
@@ -159,7 +178,7 @@ The interactive installer walks you through everything:
 $ bash install.sh
 
   resolve-audio-fix — DaVinci Resolve AAC Audio Fix for Linux
-  https://github.com/owlivion/resolve-audio-fix
+  https://github.com/owlivion-tech/davinci-resolve-audio-fix
 
 [✓] All dependencies satisfied.
 
@@ -185,7 +204,7 @@ $ bash install.sh
   Config     : ~/.config/resolve-audio-fix/dr-watch.conf
   Logs       : ~/.local/share/resolve-audio-fix/convert.log
 
-  Manual convert : dr-convert.sh <file>
+  Manual convert : davinci-audio-fix <file>
   Service status : systemctl --user status dr-audio-watch
   View logs      : journalctl --user -u dr-audio-watch -f
 ```
@@ -241,19 +260,43 @@ Drop a camera recording into `~/Downloads` — a `_dr.mov` file appears beside i
 Convert any file directly:
 
 ```bash
-dr-convert.sh /path/to/video.mp4
+davinci-audio-fix /path/to/video.mp4
 ```
 
 Batch conversion:
 
 ```bash
-dr-convert.sh ~/Videos/*.mp4
+davinci-audio-fix ~/Videos/*.mp4
 ```
 
 The tool automatically skips files that:
 - Don't have AAC audio
 - Already have the `_dr` suffix
 - Have already been converted (output file exists)
+
+### Docker
+
+Convert a single file without installing anything:
+
+```bash
+docker run --rm \
+  -v ~/Videos:/videos \
+  ghcr.io/owlivion-tech/davinci-resolve-audio-fix:latest \
+  /videos/clip.mp4
+```
+
+Batch conversion of a whole directory:
+
+```bash
+for f in ~/Videos/*.mp4; do
+  docker run --rm \
+    -v ~/Videos:/videos \
+    ghcr.io/owlivion-tech/davinci-resolve-audio-fix:latest \
+    "/videos/$(basename "$f")"
+done
+```
+
+Output files (`_dr.mov`) are written to the same mounted directory.
 
 ### Nautilus Right-Click
 
