@@ -73,4 +73,4 @@ Before submitting a PR, test:
 
 ## Questions
 
-Open a [Discussion](https://github.com/owlivion/resolve-audio-fix/discussions) for questions that aren't bug reports or feature requests.
+Open a [Discussion](https://github.com/owlivion-tech/davinci-resolve-audio-fix/discussions) for questions that aren't bug reports or feature requests.

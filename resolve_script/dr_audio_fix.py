@@ -11,7 +11,7 @@ Installation:
 Usage inside DaVinci Resolve:
     Workspace → Scripts → dr_audio_fix
 
-https://github.com/owlivion/resolve-audio-fix
+https://github.com/owlivion-tech/davinci-resolve-audio-fix
 """
 
 import os
@@ -229,7 +229,7 @@ class DrAudioFixApp:
         # Footer
         tk.Label(
             self.root,
-            text="github.com/owlivion/resolve-audio-fix",
+            text="github.com/owlivion-tech/davinci-resolve-audio-fix",
             font=("Courier New", 8),
             fg="#484f58", bg=BG_MAIN,
         ).pack(pady=(0, 6))

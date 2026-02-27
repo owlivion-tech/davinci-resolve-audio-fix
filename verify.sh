@@ -1,7 +1,7 @@
 #!/bin/bash
 # verify.sh — Audit tool for resolve-audio-fix
 # Run this BEFORE install.sh to see exactly what will happen.
-# https://github.com/owlivion/resolve-audio-fix
+# https://github.com/owlivion-tech/davinci-resolve-audio-fix
 set -euo pipefail
 
 BOLD='\033[1m'
@@ -17,7 +17,7 @@ info()    { echo -e "  $*"; }
 
 echo ""
 echo -e "${BOLD}resolve-audio-fix — Pre-Install Audit${NC}"
-echo "  https://github.com/owlivion/resolve-audio-fix"
+echo "  https://github.com/owlivion-tech/davinci-resolve-audio-fix"
 echo ""
 echo "Run this script to verify what will be installed and that"
 echo "the tool contains no outbound network calls."
@@ -101,7 +101,7 @@ if [[ -f checksums.sha256 && -f checksums.sha256.sig ]]; then
         pass "GPG signature is valid."
     else
         fail "GPG signature verification FAILED."
-        info "Download the release from: https://github.com/owlivion/resolve-audio-fix/releases"
+        info "Download the release from: https://github.com/owlivion-tech/davinci-resolve-audio-fix/releases"
     fi
 else
     echo "  No signed checksums found locally."

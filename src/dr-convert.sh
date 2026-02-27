@@ -1,6 +1,6 @@
 #!/bin/bash
 # dr-convert.sh — AAC detection and conversion for DaVinci Resolve on Linux
-# Part of resolve-audio-fix: https://github.com/owlivion/resolve-audio-fix
+# Part of resolve-audio-fix: https://github.com/owlivion-tech/davinci-resolve-audio-fix
 set -euo pipefail
 
 CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/resolve-audio-fix/dr-watch.conf"

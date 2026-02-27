@@ -1,6 +1,6 @@
 #!/bin/bash
 # install.sh — resolve-audio-fix installer
-# https://github.com/owlivion/resolve-audio-fix
+# https://github.com/owlivion-tech/davinci-resolve-audio-fix
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
@@ -16,7 +16,7 @@ done
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-REPO="https://github.com/owlivion/resolve-audio-fix"
+REPO="https://github.com/owlivion-tech/davinci-resolve-audio-fix"
 BIN_DIR="$HOME/.local/bin"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/resolve-audio-fix"
 SYSTEMD_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"

@@ -1,6 +1,6 @@
 [Unit]
 Description=resolve-audio-fix — DaVinci Resolve AAC Audio Watcher
-Documentation=https://github.com/owlivion/resolve-audio-fix
+Documentation=https://github.com/owlivion-tech/davinci-resolve-audio-fix
 After=default.target
 
 [Service]

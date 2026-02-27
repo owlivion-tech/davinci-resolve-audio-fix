@@ -20,7 +20,7 @@ These claims are automatically verified on every commit via GitHub Actions CI.
 
 **1. Audit the code yourself:**
 ```bash
-git clone https://github.com/owlivion/resolve-audio-fix.git
+git clone https://github.com/owlivion-tech/davinci-resolve-audio-fix.git
 cd resolve-audio-fix
 bash verify.sh
 ```
@@ -64,7 +64,7 @@ Older releases may contain unfixed issues — always use the latest version.
 If you discover a security issue, please **do not open a public GitHub issue**.
 
 Instead:
-1. Open a [GitHub Security Advisory](https://github.com/owlivion/resolve-audio-fix/security/advisories/new) (private by default)
+1. Open a [GitHub Security Advisory](https://github.com/owlivion-tech/davinci-resolve-audio-fix/security/advisories/new) (private by default)
 2. Describe the issue clearly and include steps to reproduce
 3. Allow up to **7 days** for an initial response
 
